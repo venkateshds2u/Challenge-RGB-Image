@@ -1,0 +1,94 @@
+import java.io.*;
+import java.net.*;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.Color;
+import javax.sound.sampled.*;
+
+public class IDSolution {
+
+   public static String getQuota(String urlQuota) throws IOException
+   {
+	      StringBuilder result = new StringBuilder();
+	      URL url = new URL(urlQuota);
+	      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	      conn.setRequestMethod("GET");
+	      BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+	      String line;
+	      while ((line = rd.readLine()) != null) {
+	         result.append(line);
+	      }
+	      rd.close();
+	      return result.toString();
+   }
+   public static String getRandom(String count) throws IOException
+   {
+	      StringBuilder result = new StringBuilder();
+	      
+	      URL url = new URL("https://www.random.org/integers/?num="+ URLEncoder.encode(count, "UTF-8")+"&min=1&max=10&col=1&base=10&format=plain&rnd=new");
+	      
+	      HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	      conn.setRequestMethod("GET");
+	      BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+	      String line;
+	      while ((line = rd.readLine()) != null) {
+	         result.append(line);
+	      }
+	      rd.close();
+	      return result.toString();
+   }
+   
+   
+   
+   private static BufferedImage mapping( int sizeX, int sizeY ) throws Exception {
+         final BufferedImage res = new BufferedImage( sizeX, sizeY, BufferedImage.TYPE_INT_RGB );
+       
+         int R = Integer.parseInt(getRandom("3"));
+      
+		   while(R>255|| R<0 )
+		   {
+			   R = Integer.parseInt(getRandom("3"));
+			    
+		   }
+	       Color myWhite = new Color(R, R, R); 
+	       int rgb = myWhite.getRGB();
+	       for (int x = 0; x < sizeX; x++){
+	           for (int y = 0; y < sizeY; y++){
+	               
+	               res.setRGB(x, y, rgb);
+	               
+	           }
+	       }
+	       return res;
+   }
+
+   private static void savePNG( final BufferedImage bi, final String path ){
+       try {
+           RenderedImage rendImage = bi;
+           ImageIO.write(rendImage, "bmp", new File(path));
+       } catch ( IOException e) {
+           e.printStackTrace();
+       }
+   }
+
+   public static void main(String[] args) throws Exception
+   {
+	   //System.out.println(getQuota("https://www.random.org/quota/?format=plain"));
+	   //System.out.println(getRandom("1"));
+	   
+	   //getRandom("3");
+	   if(Integer.parseInt(getQuota("https://www.random.org/quota/?format=plain"))>0)
+	   {
+		   BufferedImage img = mapping( 128, 128 );
+		   savePNG( img, "C:/Users/venkatesh/Desktop/test.bmp" );
+	   }
+	   
+       
+       System.out.println("done");
+	   
+   }
+}
